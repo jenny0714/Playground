@@ -71,7 +71,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <connections>
-                        <outlet property="textField1" destination="eIL-nJ-ozi" id="WL8-pb-Iaz"/>
+                        <outlet property="priceField" destination="eIL-nJ-ozi" id="WL8-pb-Iaz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
