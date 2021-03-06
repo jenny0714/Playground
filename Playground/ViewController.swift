@@ -7,19 +7,40 @@
 
 import UIKit
 
+struct CryptoRate: Codable {
+    var timestamp: Int
+    var data: CryptoData
+}
+struct CryptoData: Codable  {
+    var currencySymbol: String
+    var id: String
+    var rateUsd: String
+    var symbol: String
+    var type: String
+}
 class ViewController: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-    }
     @IBOutlet weak var textField1: UITextField!
     @IBAction func showMessage(sender: UIButton) {
-    
-        let alertController = UIAlertController(title: "Hi your answer is", message: textField1.text, preferredStyle: UIAlertController.Style.alert)
+        GetBTCAsync()
+    }
+    func GetBTCAsync(){
+        let urlString = URL(string: "https://api.coincap.io/v2/rates/bitcoin")
+        if let url = urlString {
+            let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                guard let data = data else { return }
+                self.ParseJSON(data: data)
+            }
+            task.resume()
+        }
+    }
+    func ParseJSON(data: Data?){
+        guard let data = data else { return }
+        let crypto = try! JSONDecoder().decode(CryptoRate.self, from: data)
+        DispatchQueue.main.async{self.textField1.text = crypto.data.rateUsd}
+    }
+    func TurnAlert(title: String, message: String){
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
         present(alertController, animated: true, completion: nil)
     }
-    
-    
 }
-
