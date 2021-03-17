@@ -13,7 +13,7 @@ struct CryptoRate: Codable {
 }
 
 struct CryptoData: Codable  {
-    var currencySymbol: String
+    var currencySymbol: String?
     var id: String
     var rateUsd: String
     var symbol: String
@@ -37,7 +37,7 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     @IBOutlet weak var CurrencyLabel: UILabel!
     @IBOutlet weak var Button: UIButton!
     @IBOutlet var ChoiceView: UIView!
-    let list = ["BTC", "ETH "]
+    let list = ["BTC", "ETH"]
     @IBAction func ChoiceClick(_ sender: Any) {
         PriceLabel.text = ""
         displayPickerView(true)
@@ -48,8 +48,8 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
 //      Button.setTitle(title, for: .normal)
         displayPickerView(false)
         CurrencyLabel.text = title
-        
         if let url = currencyDict[title] {
+            PriceLabel.text = "Loding..."
             getCurrencyRate(_urlString: URL(string: url))
         }
     }
@@ -96,19 +96,22 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     func getCurrencyRate(_urlString: URL?){
         if let url = _urlString {
             let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-                guard let data = data else { return }
-                self.parseJSON(data: data)
+                guard let safeData = data else {
+                    return
+                }
+                self.parseJSON(data: safeData)
             }
             task.resume()
         }
     }
     
     func parseJSON(data: Data?){
-        guard let data = data else { return }
-        let crypto = try! JSONDecoder().decode(CryptoRate.self, from: data)
+        guard let safeData = data else {
+            return
+        }
+        let crypto = try! JSONDecoder().decode(CryptoRate.self, from: safeData)
         DispatchQueue.main.async{
             self.PriceLabel.text = crypto.data.rateUsd
-            
         }
     }
     
